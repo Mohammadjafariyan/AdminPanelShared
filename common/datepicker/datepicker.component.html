@@ -1,0 +1,33 @@
+<div style="width:500px;position: absolute;padding: 5px;
+    z-index: 1000;border-radius: 2px 2px 2px 2px" class="panel panel-info"
+     [ngStyle]="{'display':!show   ?'none' :'block'}">
+  <div class="panel-heading ">
+    <span>{{name}}</span>
+
+  </div>
+  <div class="panel-body">
+    <div class="col-md-4 ">
+      <label>روز</label>
+      <p-spinner size="5" [(ngModel)]="day" [min]="1" [max]="31"></p-spinner>
+    </div>
+    <div class="col-md-4">
+      <label>ماه</label>
+      <p-dropdown  [options]="months" (change)="monthChange()"
+                  size="5" [style]="{'width':'100px'}" [(ngModel)]="month"></p-dropdown>
+    </div>
+    <div class="col-md-4">
+      <label>سال</label>
+      <p-spinner size="5" [min]="1300" thousandSeparator="" [max]="1400" [(ngModel)]="year"></p-spinner>
+    </div>
+    <hr>
+    <button type="button" (click)="select();showMe();" class="btn btn-button btn-info">انتخاب</button>
+    <button type="button" (click)="goToday();" class="btn btn-button btn-info">امروز</button>
+
+  </div>
+</div>
+<div class="form-group" >
+  <div class="dateToSelect" id="{{id}}">
+    <i class="fa fa-calendar btn btn-button w3 w3-cyan w3-text-white" (click)="showMe();"></i>
+    <p-inputMask  mask="9999/99/99" [(ngModel)]="_selected" (onComplete)="onComplete()" placeholder="{{title}} 1396/10/02" ></p-inputMask>
+  </div>
+</div>

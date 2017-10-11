@@ -1,0 +1,47 @@
+<form class="ui-g-12" style="margin-bottom:5px; " [formGroup]="heroForm">
+  <div class="form-group col-md-4" *ngFor="let item of filters" style="height: 60px;max-height: 60px">
+    <label *ngIf="item.type!=2">{{item.title}} :</label><br *ngIf="item.type!=2">
+    <label *ngIf="item.type==2 && item.obtions">{{item.title}} :</label><br *ngIf="item.type==2 && item.obtions">
+    <app-datepicker *ngIf="item.type==0" (selectedEvent)="set_dateFrom($event,item.name)" style="margin-top: 20px"
+                    [selected]="set_dateFrom"
+                    [name]="item.name"></app-datepicker>
+
+    <app-datepicker *ngIf="item.type==5" (selectedEvent)="set_dateTo($event,item.nameTo)" style="margin-top: 20px"
+                    [selected]="set_dateTo"
+                    [name]="item.name"></app-datepicker>
+
+    <select *ngIf="item.type==2 && item.obtions" [formControlName]="item.name" class="form-control "
+            (change)="filterChange(item.name,$Event)">
+      <option value="">هیچکدام</option>
+      <option *ngFor="let option of item.obtions"
+              [attr.value]="item.optionPValue ? option[item.optionPValue] :option ">
+        {{item.optionPName ? option[item.optionPName] : option}}
+      </option>
+    </select>
+
+    <div class="col-sm-10" *ngIf="item.type==1">
+      <input type="text" [formControlName]="item.name" [attr.name]="item.name" class="form-control"
+             id="inputPassword3"
+             [attr.placeholder]="item.name">
+    </div>
+    <div class="col-sm-10" *ngIf="item.type==4">
+      <input type="number" [formControlName]="item.name" [attr.name]="item.name" class="form-control"
+             id="inputPassword3"
+             [attr.placeholder]="item.name">
+    </div>
+
+
+    <div class="col-md-6" *ngIf="item.type==3">
+      <p-checkbox [attr.placeholder]="item.name" binary="true"></p-checkbox>
+    </div>
+<hr>
+    <div *ngIf="formErrors[item.name]" class="alert alert-danger">
+      {{ formErrors[item.name]}}
+    </div>
+  </div>
+
+  <br>
+  <button pButton type="button" *ngIf="heroForm && heroForm.valid" (click)="submit()"
+          style="margin-bottom:10px;" label=" ثبت">
+  </button>
+</form>

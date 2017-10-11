@@ -1,0 +1,186 @@
+<div class="row">
+
+  <div class="col-lg-12 col-sm-12 col-xs-12">
+    <div class="widget">
+      <div class="widget-header bg-lightred">
+        <i class="widget-icon fa fa-arrow-up"></i>
+        <span class="widget-caption">{{tableName}}</span>
+        <div class="widget-buttons">
+
+          <a data-toggle="maximize">
+            <i class="fa fa-expand"></i>
+          </a>
+          <a data-toggle="collapse">
+            <i class="fa fa-minus"></i>
+          </a>
+          <a data-toggle="dispose">
+            <i class="fa fa-times"></i>
+          </a>
+        </div>
+        <!--Widget Buttons-->
+      </div>
+      <!--Widget Header-->
+      <div class="widget-body">
+
+        <button pButton type="button" (click)="toggle()" style="margin-bottom:10px" label="تغییر نمایش"
+                icon="fa-list"></button>
+        <div class="onInline" style="float:left;margin-left:25px">
+          <p-multiSelect [options]="columnOptions" [(ngModel)]="tableColuns"
+                         defaultLabel="انتخاب فیلد های جدول"></p-multiSelect>
+        </div>
+
+        <hr>
+        <form class="ui-g-12" style="margin-bottom:5px; " [formGroup]="heroForm">
+          <div class="form-group col-md-4" *ngFor="let item of filters" style="height: 60px;max-height: 60px">
+            <label *ngIf="item.type!=2">{{item.title}} :</label><br *ngIf="item.type!=2">
+            <label *ngIf="item.type==2 && item.obtions">{{item.title}} :</label><br
+            *ngIf="item.type==2 && item.obtions">
+            <app-datepicker *ngIf="item.type==0" (selectedEvent)="set_dateFrom($event,item.name)"
+                            style="margin-top: 20px"
+                            [selected]="set_dateFrom"
+                            [name]="item.name"></app-datepicker>
+
+            <app-datepicker *ngIf="item.type==5" (selectedEvent)="set_dateTo($event,item.nameTo)"
+                            style="margin-top: 20px"
+                            [selected]="set_dateTo"
+                            [name]="item.name"></app-datepicker>
+
+            <select *ngIf="item.type==2 && item.obtions" [formControlName]="item.name" class="form-control "
+                    (change)="filterChange(item.name,$Event)">
+              <option value="">هیچکدام</option>
+              <option *ngFor="let option of item.obtions"
+                      [attr.value]="item.optionPValue ? option[item.optionPValue] :option ">
+                {{item.optionPName ? option[item.optionPName] : option}}
+              </option>
+            </select>
+
+            <div class="col-sm-10" *ngIf="item.type==1">
+              <input type="text" [formControlName]="item.name" [attr.name]="item.name" class="form-control"
+                     id="inputPassword3"
+                     [attr.placeholder]="item.title">
+            </div>
+
+            <div class="col-sm-10" *ngIf="item.type==4">
+              <input type="number" [formControlName]="item.name" [attr.name]="item.name" class="form-control"
+                     id="inputPassword3"
+                     [attr.placeholder]="item.name">
+            </div>
+
+            <div class="col-md-6" *ngIf="item.type==3">
+              <p-checkbox [attr.placeholder]="item.name" binary="true"></p-checkbox>
+            </div>
+
+            <div *ngIf="formErrors[item.name]" class="alert alert-danger">
+              {{ formErrors[item.name]}}
+            </div>
+          </div>
+
+
+        </form>
+
+        <br>
+        <button pButton type="button"  *ngIf="heroForm && heroForm.valid" (click)="filterSearch()"
+                style="margin-bottom:10px;" label=" جستجو"
+                icon="fa-search"></button>
+
+        <br>
+
+
+        <div style="margin: 30px; height: 30px">
+
+        </div>
+        <div *ngIf="!isLazy" class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input #gb type="text" pInputText size="50" placeholder="جستجو ">
+        </div>
+        <p-dataTable *ngIf="!isLazy" [responsive]="true" [value]="models" expandableRows="true" [globalFilter]="gb"
+                     [pageLinks]="3" [rowsPerPageOptions]="[20,50,100]"
+                     [rows]="20" [emptyMessage]="emptymsg" [stacked]="stacked" [paginator]="true">
+          <p-header>{{tableName}}
+
+          </p-header>
+          <p-column expander="true" [style]="style1" styleClass="col-icon"></p-column>
+          <ng-template let-car pTemplate="rowexpansion">
+            <div class="ui-grid ui-grid-responsive root ui-fluid" style="font-size:16px;padding:20px">
+              <div class="ui-grid-row">
+                <div class="ui-grid-col-12">
+                  <div class="ui-grid ui-grid-responsive ui-grid-pad">
+
+                    <div class="ui-grid-row" *ngFor="let col of tableColuns">
+                      <div class="ui-grid-col-2 ">{{col.header}}:</div>
+                      <div class="ui-grid-col-10">{{car[col.field]}}</div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <p-column *ngFor="let col of tableColuns" [field]="col.field" [style]="style1" [header]="col.header">
+          </p-column>
+
+          <p-column styleClass="col-button" *ngIf="buttons">
+            <ng-template pTemplate="header">
+            </ng-template>
+            <ng-template let-car="rowData" pTemplate="body">
+              <ng-template  ngFor let-b [ngForOf]="buttons">
+                <button type="button" *ngIf="b.place==1" (click)="buttonClick(b.id,car)"
+                        style="{{b.style ? b.style : ''}}"
+                        class="{{b.class ? b.class :''}} {{b.classFunc ? b.classFunc(car) : ''}}">
+                  {{b.NameFunc ? b.NameFunc(car) :''}} {{b.name ? b.name:''}}
+                  <i *ngIf="b.icon" class="{{b.icon}}"></i>
+                </button>
+              </ng-template>
+            </ng-template>
+          </p-column>
+        </p-dataTable>
+
+
+        <p-dataTable *ngIf="isLazy" [responsive]="true" [value]="models" [lazy]="true" expandableRows="true"
+                     [pageLinks]="3" [rowsPerPageOptions]="[20,50,100]"
+                     [rows]="20" [emptyMessage]="emptymsg" [stacked]="stacked" [paginator]="true" [totalRecords]="total"
+                     (onLazyLoad)="loadCarsLazy($event)">
+          <p-header>{{tableName}}
+
+          </p-header>
+          <p-column expander="true" [style]="style1" styleClass="col-icon"></p-column>
+          <ng-template let-car pTemplate="rowexpansion">
+            <div class="ui-grid ui-grid-responsive root ui-fluid" style="font-size:16px;padding:20px">
+              <div class="ui-grid-row">
+                <div class="ui-grid-col-12">
+                  <div class="ui-grid ui-grid-responsive ui-grid-pad">
+
+                    <div class="ui-grid-row" *ngFor="let col of tableColuns">
+                      <div class="ui-grid-col-2 ">{{col.header}}:</div>
+                      <div class="ui-grid-col-10">{{car[col.field]}}</div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          <p-column *ngFor="let col of tableColuns" [field]="col.field" [style]="style1" [header]="col.header">
+          </p-column>
+
+          <p-column styleClass="col-button" *ngIf="buttons">
+            <ng-template pTemplate="header">
+            </ng-template>
+            <ng-template let-car="rowData" pTemplate="body">
+              <ng-template  ngFor let-b [ngForOf]="buttons">
+                <button type="button" *ngIf="b.place==1" (click)="buttonClick(b.id,car)"
+                        style="{{b.style ? b.style : ''}}"
+                        class="{{b.class ? b.class :''}} {{b.classFunc ? b.classFunc(car) : ''}}">
+                  {{b.NameFunc ? b.NameFunc(car) :''}} {{b.name ? b.name:''}}
+                  <i *ngIf="b.icon" class="{{b.icon}}"></i>
+                </button>
+              </ng-template>
+            </ng-template>
+          </p-column>
+        </p-dataTable>
+      </div>
+      <!--Widget Body-->
+    </div>
+    <!--Widget-->
+  </div>
+</div>
